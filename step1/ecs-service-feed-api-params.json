@@ -1,0 +1,30 @@
+[
+    {
+        "ParameterKey": "ServiceName",
+        "ParameterValue": "feed-api"
+    },
+    {
+        "ParameterKey": "TaskDefinition",
+        "ParameterValue": "/cuddlekube/feed-api/Latest"
+    },
+    {
+        "ParameterKey": "Cluster",
+        "ParameterValue": "cuddlekube"
+    },
+    {
+        "ParameterKey": "SubnetIDs",
+        "ParameterValue": "/cuddlekube/SubnetIDs"
+    },
+    {
+        "ParameterKey": "SecurityGroups",
+        "ParameterValue": "/cuddlekube/ContainerSecurityGroup"
+    },
+    {
+        "ParameterKey": "CloudMapRegistry",
+        "ParameterValue": "/cuddlekube/cloudmap"
+    },
+    {
+        "ParameterKey": "DesiredCount",
+        "ParameterValue": "1"
+    }
+]

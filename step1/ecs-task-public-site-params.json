@@ -1,0 +1,26 @@
+[
+    {
+        "ParameterKey": "TaskFamily",
+        "ParameterValue": "public-site"
+    },
+    {
+        "ParameterKey": "ContainerName",
+        "ParameterValue": "arjenschwarz/cuddle-public-site"
+    },
+    {
+        "ParameterKey": "ContainerVersion",
+        "ParameterValue": "1.0"
+    },
+    {
+        "ParameterKey": "ECSRole",
+        "ParameterValue": "/cuddlekube/iam/ECSRole"
+    },
+    {
+        "ParameterKey": "ECSTaskExecutionRole",
+        "ParameterValue": "/cuddlekube/iam/ECSTaskExecutionRole"
+    },
+    {
+        "ParameterKey": "InternalDomain",
+        "ParameterValue": "cuddle-kube.svc.cluster.local"
+    }
+]

@@ -1,0 +1,30 @@
+[
+    {
+        "ParameterKey": "ServiceName",
+        "ParameterValue": "happiness-api"
+    },
+    {
+        "ParameterKey": "TaskDefinition",
+        "ParameterValue": "/cuddlekube/happiness-api/Latest"
+    },
+    {
+        "ParameterKey": "Cluster",
+        "ParameterValue": "cuddlekube"
+    },
+    {
+        "ParameterKey": "SubnetIDs",
+        "ParameterValue": "/cuddlekube/SubnetIDs"
+    },
+    {
+        "ParameterKey": "SecurityGroups",
+        "ParameterValue": "/cuddlekube/ContainerSecurityGroup"
+    },
+    {
+        "ParameterKey": "CloudMapRegistry",
+        "ParameterValue": "/cuddlekube/cloudmap"
+    },
+    {
+        "ParameterKey": "DesiredCount",
+        "ParameterValue": "1"
+    }
+]

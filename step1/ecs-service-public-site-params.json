@@ -1,0 +1,34 @@
+[
+    {
+        "ParameterKey": "ServiceName",
+        "ParameterValue": "public-site"
+    },
+    {
+        "ParameterKey": "TaskDefinition",
+        "ParameterValue": "/cuddlekube/public-site/Latest"
+    },
+    {
+        "ParameterKey": "Cluster",
+        "ParameterValue": "cuddlekube"
+    },
+    {
+        "ParameterKey": "SubnetIDs",
+        "ParameterValue": "/cuddlekube/SubnetIDs"
+    },
+    {
+        "ParameterKey": "SecurityGroups",
+        "ParameterValue": "/cuddlekube/ContainerSecurityGroup"
+    },
+    {
+        "ParameterKey": "CloudMapRegistry",
+        "ParameterValue": "/cuddlekube/cloudmap"
+    },
+    {
+        "ParameterKey": "DesiredCount",
+        "ParameterValue": "1"
+    },
+    {
+        "ParameterKey": "TargetGroup",
+        "ParameterValue": "arn:aws:elasticloadbalancing:ap-southeast-2:554643136430:targetgroup/cuddl-Targe-SADUWY86Y4MH/a42e89df4f31f365"
+    }
+]

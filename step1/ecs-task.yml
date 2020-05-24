@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Template for Fargate ECS Task definitions
+Parameters:
+  TaskFamily:
+    Type: String
+    Description: The family of the Task Definition
+  ContainerName:
+    Type: String
+    Description: The name of the container
+  ContainerVersion:
+    Type: String
+    Default: latest
+    Description: Location of the image
+  ECSRole:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The ECS role
+  ECSTaskExecutionRole:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The ECS Task Execution Role
+  InternalDomain:
+    Type: String
+    Default: cuddle-kube.svc.cluster.local
+    Description: The Internal Domain
+
+Resources:
+  Taskdefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      RequiresCompatibilities:
+        - "FARGATE"
+      Family: !Ref TaskFamily
+      NetworkMode: awsvpc
+      TaskRoleArn: !Ref ECSRole
+      ExecutionRoleArn: !Ref ECSTaskExecutionRole
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: !Ref TaskFamily
+          Image: !Sub "${ContainerName}:${ContainerVersion}"
+          Essential: true
+          Environment:
+            - Name: "INTERNAL_DOMAIN"
+              Value: !Ref InternalDomain
+          HealthCheck:
+            Command:
+              - "CMD-SHELL"
+              - "exit 0"
+            StartPeriod: 10
+            Interval: 5
+            Timeout: 2
+            Retries: 3
+          PortMappings:
+            - ContainerPort: 8080
+              HostPort: 8080
+              Protocol: tcp
+
+  TaskParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Join
+        - "/"
+        - - "/cuddlekube"
+          - !Ref TaskFamily
+          - "Latest"
+      Type: "String"
+      Value: !Ref Taskdefinition
+      Description: !Sub "Latest ARN for the ${TaskFamily}"
+
+Outputs:
+  CurrentVersion:
+    Description: Latest version of the task
+    Value: !Ref Taskdefinition
+    Export:
+      Name: !Sub "${AWS::StackName}-Arn"

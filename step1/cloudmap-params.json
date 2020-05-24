@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterKey": "InternalDomainName",
+        "ParameterValue": "cuddle-kube.svc.cluster.local"
+    },
+    {
+        "ParameterKey": "VPCID",
+        "ParameterValue": "/cuddlekube/VPCID"
+    }
+]

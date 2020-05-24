@@ -1,0 +1,208 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: VPC including subnets and peering
+Parameters:
+  Identifier:
+    Type: String
+    Description: The unique identifier of the VPC
+  CidrBlock:
+    Type: String
+    Description: The CIDR block for the VPC.
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(/([0-9]|[1-2][0-9]|3[0-2]))$"
+    Default: 10.42.0.0/16
+    ConstraintDescription: Must be a valid IP CIDR block.
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref CidrBlock
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${Identifier}-VPC"
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  RouteTablePublic:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: AccessControl
+          Value: "PUBLIC"
+        - Key: Name
+          Value: !Sub "${Identifier}-RT-PUBLIC"
+
+  S3Endpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action:
+              - '*'
+            Resource:
+              - 'arn:aws:s3:::*'
+      RouteTableIds:
+        - !Ref RouteTablePublic
+      ServiceName: !Join
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .s3
+      VpcId: !Ref VPC
+
+  DynamoDBEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action:
+              - '*'
+            Resource:
+              - '*'
+      RouteTableIds:
+        - !Ref RouteTablePublic
+      ServiceName: !Join
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .dynamodb
+      VpcId: !Ref VPC
+
+  InternetRoutePublic:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref RouteTablePublic
+
+  SubnetAPub:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [0, !Cidr [!GetAtt VPC.CidrBlock, 8, 8]]
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      Tags:
+        - Key: AccessControl
+          Value: "PUBLIC"
+        - Key: Name
+          Value: !Sub "${Identifier}-SN-PUBLIC-1"
+  AssignPublicRouteTableA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetAPub
+      RouteTableId: !Ref RouteTablePublic
+
+  SubnetBPub:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [1, !Cidr [!GetAtt VPC.CidrBlock, 8, 8]]
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      Tags:
+        - Key: AccessControl
+          Value: "PUBLIC"
+        - Key: Name
+          Value: !Sub "${Identifier}-SN-PUBLIC-2"
+  AssignPublicRouteTableB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetBPub
+      RouteTableId: !Ref RouteTablePublic
+
+  SubnetCPub:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [2, !Cidr [!GetAtt VPC.CidrBlock, 8, 8]]
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs: ""
+      Tags:
+        - Key: AccessControl
+          Value: "PUBLIC"
+        - Key: Name
+          Value: !Sub "${Identifier}-SN-PUBLIC-3"
+  AssignPublicRouteTableC:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetCPub
+      RouteTableId: !Ref RouteTablePublic
+
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ContainerSecurityGroup
+      GroupDescription: SecurityGroup for the containers
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: !Ref CidrBlock
+        - IpProtocol: tcp
+          FromPort: 9901
+          ToPort: 9901
+          CidrIp: !Ref CidrBlock
+        - IpProtocol: tcp
+          FromPort: 15000
+          ToPort: 15000
+          CidrIp: !Ref CidrBlock
+
+  VPCParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: /cuddlekube/VPCID
+      Type: "String"
+      Value: !Ref VPC
+      Description: "VPC ID"
+
+  SubnetIDsParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: /cuddlekube/SubnetIDs
+      Type: "StringList"
+      Value: !Join [',', [!Ref SubnetAPub, !Ref SubnetBPub, !Ref SubnetCPub]]
+      Description: "Subnet IDs"
+
+  ContainerSecurityGroupParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: /cuddlekube/ContainerSecurityGroup
+      Type: "StringList"
+      Value: !Ref ContainerSecurityGroup
+      Description: "Security group ID"
+
+Outputs:
+  VPCID:
+    Description: The ID of the VPC
+    Value: !Ref VPC
+    Export:
+      Name: !Sub "${AWS::StackName}-VPCID"
+  PublicSubnetIDs:
+    Description: "IDs of the Public Subnets in the VPC"
+    Value: !Join [',', [!Ref SubnetAPub, !Ref SubnetBPub, !Ref SubnetCPub]]
+    Export:
+      Name: !Sub "${AWS::StackName}-PUBLIC-SUBNET-IDS"

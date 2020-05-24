@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Service Discovery
+Parameters:
+  InternalDomainName:
+    Type: String
+    Description: The domain used for internal services
+  VPCID:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>
+    Description: The ID of the VPC
+
+Resources:
+  InternalNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+      Description: Private Namespace
+      Name: !Ref InternalDomainName
+      Vpc: !Ref VPCID
+
+  CloudMapParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: /cuddlekube/cloudmap
+      Type: "String"
+      Value: !Ref InternalNamespace
+      Description: "Cloud Map ARN"
+
+Outputs:
+  InternalNamespaceArn:
+    Description: Arn of the internal registry
+    Value: !GetAtt InternalNamespace.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-InternalNamespace-Arn"
+  InternalNamespaceName:
+    Description: Name of the internal registry
+    Value: !Ref InternalNamespace
+    Export:
+      Name: !Sub "${AWS::StackName}-InternalNamespace-ID"

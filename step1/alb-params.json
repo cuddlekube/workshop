@@ -1,0 +1,14 @@
+[
+    {
+        "ParameterKey": "Identifier",
+        "ParameterValue": "cuddlekube"
+    },
+    {
+        "ParameterKey": "VPCID",
+        "ParameterValue": "/cuddlekube/VPCID"
+    },
+    {
+        "ParameterKey": "SubnetIDs",
+        "ParameterValue": "/cuddlekube/SubnetIDs"
+    }
+]

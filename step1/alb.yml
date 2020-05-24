@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ALB for the Kube
+Parameters:
+  Identifier:
+    Type: String
+    Description: Identifier for the stack
+  VPCID:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>
+    Description: The ID of the VPC
+  SubnetIDs:
+    Type: AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>
+    Description: The IDs of the Subnets
+
+Resources:
+  ALBAccess:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub "${Identifier} ALB security group"
+      VpcId: !Ref VPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: "0.0.0.0/0"
+
+  # Create the ALB
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets: !Ref SubnetIDs
+      SecurityGroups:
+      - !Ref ALBAccess
+      Scheme: "internet-facing"
+      Type: application
+      # LoadBalancerAttributes:
+      #   - Key: access_logs.s3.enabled
+      #     Value: "true"
+      #   - Key: access_logs.s3.bucket
+      #     Value: !Ref LoggingBucket
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthyThresholdCount: 4
+      UnhealthyThresholdCount: 10
+      HealthCheckPath: /health
+      Port: 8080
+      Protocol: HTTP
+      VpcId: !Ref VPCID
+      TargetType: ip
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: "60"
+
+  HttpListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref ALB
+      Port: 80
+      Protocol: HTTP
+
+  TargetGroupParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: /cuddlekube/TargetGroup
+      Type: "String"
+      Value: !Ref TargetGroup
+      Description: "Target Group ARN"
+
+Outputs:
+  TargetGroupArn:
+    Description: Arn of the TargetGroup
+    Value: !Ref TargetGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-TG-ARN"
+  ALBEndpoint:
+    Description: The URL you can reach the ALB on
+    Value: !GetAtt ALB.DNSName
