@@ -27,7 +27,7 @@ aws cloudformation create-stack --stack-name cuddlekube-dynamodb --template-body
 This template creates a table in pay per request mode, ensuring it doesn't cost us money unless we actually use it. While we're at it, let's load some sample data in here.
 
 ```bash
-aws dynamodb put-item --table-name cuddlekube --item file://step1/dynamo-data.json
+aws dynamodb put-item --table-name cuddlykube --item file://step1/dynamo-data.json
 ```
 
 ## VPC and security group

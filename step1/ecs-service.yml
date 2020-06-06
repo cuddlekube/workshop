@@ -57,8 +57,7 @@ Resources:
           AssignPublicIp: ENABLED
           SecurityGroups: !Ref SecurityGroups
           Subnets: !Ref SubnetIDs
-
-      PlatformVersion: LATEST
+      PlatformVersion: 1.4.0
       ServiceName: !Ref ServiceName
       ServiceRegistries:
         - ContainerName: !Ref ServiceName
