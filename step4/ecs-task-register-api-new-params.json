@@ -1,0 +1,38 @@
+[
+    {
+        "ParameterKey": "TaskFamily",
+        "ParameterValue": "register-api-new"
+    },
+    {
+        "ParameterKey": "ContainerName",
+        "ParameterValue": "arjenschwarz/cuddle-register-api"
+    },
+    {
+        "ParameterKey": "ContainerVersion",
+        "ParameterValue": "1.1"
+    },
+    {
+        "ParameterKey": "ECSRole",
+        "ParameterValue": "/cuddlekube/iam/ECSRole"
+    },
+    {
+        "ParameterKey": "ECSTaskExecutionRole",
+        "ParameterValue": "/cuddlekube/iam/ECSTaskExecutionRole"
+    },
+    {
+        "ParameterKey": "InternalDomain",
+        "ParameterValue": "cuddle-kube.svc.cluster.local"
+    },
+    {
+        "ParameterKey": "MeshName",
+        "ParameterValue": "/cuddlekube/mesh"
+    },
+    {
+        "ParameterKey": "MeshNodePrefix",
+        "ParameterValue": "register-v2"
+    },
+    {
+        "ParameterKey": "LogGroup",
+        "ParameterValue": "/cuddlekube/logs/microservices"
+    }
+]

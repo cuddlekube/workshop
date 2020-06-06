@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterKey": "MeshName",
+        "ParameterValue": "/cuddlekube/mesh"
+    },
+    {
+        "ParameterKey": "Domain",
+        "ParameterValue": "/cuddlekube/internaldomain"
+    }
+]

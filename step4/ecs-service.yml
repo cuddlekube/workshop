@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: The ECS Service
+Parameters:
+  ServiceName:
+    Type: String
+    Description: The name of the service
+  TaskDefinition:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The stack of the task definition
+  Cluster:
+    Type: String
+    Description: The name of the ECS Cluster
+  SubnetIDs:
+    Type: AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>
+    Description: The Parameter store value containing the Subnet IDs to deploy in
+  SecurityGroups:
+    Type: AWS::SSM::Parameter::Value<List<AWS::EC2::SecurityGroup::Id>>
+    Description: The Security Groups to be used
+  CloudMapRegistry:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The ARN of the service discovery registry
+  DesiredCount:
+    Type: Number
+    Description: The number of instances we want to run
+  TargetGroup:
+    Type: String
+    Default: ""
+    Description: (optional) The ARN of the TargetGroup this service should be attached to
+
+Conditions:
+  HasTargetGroup: !Not [ !Equals [ !Ref TargetGroup, "" ]]
+
+Resources:
+  ServiceRegistry:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Description: !Sub "${ServiceName} discovery"
+      DnsConfig:
+        DnsRecords:
+          - Type: A
+            TTL: 60
+        RoutingPolicy: WEIGHTED
+      Name: !Ref ServiceName
+      NamespaceId: !Ref CloudMapRegistry
+
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+      DesiredCount: !Ref DesiredCount
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref SubnetIDs
+      PlatformVersion: 1.4.0
+      ServiceName: !Ref ServiceName
+      ServiceRegistries:
+        - ContainerName: !Ref ServiceName
+          RegistryArn: !GetAtt ServiceRegistry.Arn
+      TaskDefinition: !Ref TaskDefinition
+      LoadBalancers:
+        !If
+        - HasTargetGroup
+        - - ContainerName: !Ref ServiceName
+            ContainerPort: 8080
+            TargetGroupArn: !Ref TargetGroup
+        - !Ref "AWS::NoValue"
+
+# Outputs:

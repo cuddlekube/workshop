@@ -1,0 +1,147 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Template for Fargate ECS Task definitions
+Parameters:
+  TaskFamily:
+    Type: String
+    Description: The family of the Task Definition
+  ContainerName:
+    Type: String
+    Description: The name of the container
+  ContainerVersion:
+    Type: String
+    Default: latest
+    Description: Location of the image
+  ECSRole:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The ECS role
+  ECSTaskExecutionRole:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The ECS Task Execution Role
+  InternalDomain:
+    Type: String
+    Default: cuddle-kube.svc.cluster.local
+    Description: The Internal Domain
+  MeshName:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The parameter store key that contains the name of the appmesh
+  MeshNodePrefix:
+    Type: String
+    Description: The prefix of the AppMesh node (e.g. the feed-v1 part of feed-v1-cuddle-kube)
+  LogGroup:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The parameter store key that contains the name of the CloudWatch log group
+
+Resources:
+  Taskdefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      RequiresCompatibilities:
+        - "FARGATE"
+      Family: !Ref TaskFamily
+      NetworkMode: awsvpc
+      TaskRoleArn: !Ref ECSRole
+      ExecutionRoleArn: !Ref ECSTaskExecutionRole
+      Cpu: "256"
+      Memory: "512"
+      ProxyConfiguration:
+        Type: APPMESH
+        ContainerName: envoy
+        ProxyConfigurationProperties:
+          - Name: IgnoredUID
+            Value: '1337'
+          - Name: ProxyIngressPort
+            Value: '15000'
+          - Name: ProxyEgressPort
+            Value: '15001'
+          - Name: AppPorts
+            Value: '8080'
+          - Name: EgressIgnoredIPs
+            Value: 169.254.170.2,169.254.169.254
+      ContainerDefinitions:
+        - Name: !Ref TaskFamily
+          Image: !Sub "${ContainerName}:${ContainerVersion}"
+          Essential: true
+          Environment:
+            - Name: "INTERNAL_DOMAIN"
+              Value: !Ref InternalDomain
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Ref TaskFamily
+          HealthCheck:
+            Command:
+              - "CMD-SHELL"
+              - "exit 0"
+            StartPeriod: 10
+            Interval: 5
+            Timeout: 2
+            Retries: 3
+          PortMappings:
+            - ContainerPort: 8080
+              HostPort: 8080
+              Protocol: tcp
+          DependsOn:
+            - ContainerName: "envoy"
+              Condition: "HEALTHY"
+        - Name: "envoy"
+          Image: "840364872350.dkr.ecr.ap-southeast-2.amazonaws.com/aws-appmesh-envoy:v1.12.3.0-prod"
+          Essential: true
+          Environment:
+            - Name: "APPMESH_VIRTUAL_NODE_NAME"
+              Value: !Sub "mesh/${MeshName}/virtualNode/${MeshNodePrefix}-${MeshName}"
+            - Name: "ENABLE_ENVOY_XRAY_TRACING"
+              Value: "1"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Ref TaskFamily
+          HealthCheck:
+            Command:
+              - "CMD-SHELL"
+              - "curl -s http://localhost:9901/server_info | grep state | grep -q LIVE"
+            StartPeriod: 10
+            Interval: 5
+            Timeout: 2
+            Retries: 3
+          User: "1337"
+        - Name: xray-daemon
+          Image: amazon/aws-xray-daemon
+          HealthCheck:
+            Command:
+              - "CMD-SHELL"
+              - "exit 0"
+            StartPeriod: 10
+            Interval: 5
+            Timeout: 2
+            Retries: 3
+          User: '1337'
+          Essential: true
+          Cpu: 32
+          MemoryReservation: 256
+          PortMappings:
+          - ContainerPort: 2000
+            HostPort: 2000
+            Protocol: udp
+
+  TaskParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Join
+        - "/"
+        - - "/cuddlekube"
+          - !Ref TaskFamily
+          - "Latest"
+      Type: "String"
+      Value: !Ref Taskdefinition
+      Description: !Sub "Latest ARN for the ${TaskFamily}"
+
+Outputs:
+  CurrentVersion:
+    Description: Latest version of the task
+    Value: !Ref Taskdefinition
+    Export:
+      Name: !Sub "${AWS::StackName}-Arn"

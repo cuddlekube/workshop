@@ -1,0 +1,30 @@
+[
+    {
+        "ParameterKey": "ServiceName",
+        "ParameterValue": "register-api-new"
+    },
+    {
+        "ParameterKey": "TaskDefinition",
+        "ParameterValue": "/cuddlekube/register-api-new/Latest"
+    },
+    {
+        "ParameterKey": "Cluster",
+        "ParameterValue": "cuddlekube"
+    },
+    {
+        "ParameterKey": "SubnetIDs",
+        "ParameterValue": "/cuddlekube/SubnetIDs"
+    },
+    {
+        "ParameterKey": "SecurityGroups",
+        "ParameterValue": "/cuddlekube/ContainerSecurityGroup"
+    },
+    {
+        "ParameterKey": "CloudMapRegistry",
+        "ParameterValue": "/cuddlekube/cloudmap"
+    },
+    {
+        "ParameterKey": "DesiredCount",
+        "ParameterValue": "1"
+    }
+]
