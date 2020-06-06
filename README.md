@@ -1,8 +1,10 @@
 # Building observable applications on Fargate Workshop
 
-This workshop is aimed at building an observable microservices Fargate application. It is based on the work done for a presentation given by Prateek Nayak and Arjen Schwarz titled "Keeping an Eye on your Serverless Containers" at Container Camp Australia in 2019. You can watch a recording, or read a textual version of the presentation [on Medium](https://medium.com/digio-australia/keeping-an-eye-on-your-serverless-containers-8a318e30b7a4).
+This workshop was originally made for the [AWS Programming and Tools meetup in Melbourne](https://www.meetup.com/Melbourne-AWS-Programming-and-Tools-Meetup/events/270900703/).
 
-This workshop will not cover the basics for Fargate. If you're not familiar with Fargate, it's recommended to go through earlier workshops that covered it such as [this one I've given in the past](https://github.com/ArjenSchwarz/workshop-fargate-bastion), or at least read up on the service. As the focus isn't on Fargate, but it's interaction with the other services, you will likely be able to follow along regardless of your knowledge though.
+The workshop is aimed at building an observable microservices Fargate application. It is based on the work done for a presentation given by Prateek Nayak and Arjen Schwarz titled "Keeping an Eye on your Serverless Containers" at Container Camp Australia in 2019. You can watch a recording, or read a textual version of the presentation [on Medium](https://medium.com/digio-australia/keeping-an-eye-on-your-serverless-containers-8a318e30b7a4).
+
+The workshop will not cover the basics for Fargate. If you're not familiar with Fargate, it's recommended to go through earlier workshops that covered it such as [this one I've given in the past](https://github.com/ArjenSchwarz/workshop-fargate-bastion), or at least read up on the service. As the focus isn't on Fargate, but it's interaction with the other services, you will likely be able to follow along regardless of your knowledge though.
 
 The end result of the workshop is you running a small application that you can monitor using various tools provided by AWS.
 
