@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Loggroups that need to be created
+Parameters:
+  Identifier:
+    Type: String
+    Description: Unique identifier for the loggroups
+
+Resources:
+  FlowLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${Identifier}-FlowLogs"
+      RetentionInDays: 14
+
+  FlowLogsParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Join
+        - "/"
+        - - "/cuddlekube"
+          - "logs"
+          - "flowlogs"
+      Type: "String"
+      Value: !Ref FlowLogs
+      Description: The flowlogs log group
+
+  MicroserviceLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${Identifier}-Microservices"
+      RetentionInDays: 14
+
+  MicroserviceParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Join
+        - "/"
+        - - "/cuddlekube"
+          - "logs"
+          - "microservices"
+      Type: "String"
+      Value: !Ref MicroserviceLogs
+      Description: The microservices log group
+
+Outputs:
+  FlowLogs:
+    Description: The FlowLogs log group
+    Value: !Ref FlowLogs
+    Export:
+      Name: !Sub "${AWS::StackName}-FlowLogs"
+  MicroserviceLogs:
+    Description: The MicroserviceLogs log group
+    Value: !Ref MicroserviceLogs
+    Export:
+      Name: !Sub "${AWS::StackName}-MicroserviceLogs"

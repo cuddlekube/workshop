@@ -1,0 +1,14 @@
+[
+    {
+        "ParameterKey": "Identifier",
+        "ParameterValue": "cuddlekube"
+    },
+    {
+        "ParameterKey": "CidrBlock",
+        "ParameterValue": "10.42.0.0/16"
+    },
+    {
+        "ParameterKey": "FlowLogs",
+        "ParameterValue": "/cuddlekube/logs/flowlogs"
+    }
+]

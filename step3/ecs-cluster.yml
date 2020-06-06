@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ECS Cluster
+Parameters:
+  Identifier:
+    Type: String
+
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref Identifier
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+
+  ServiceLinkedRole:
+    Type: AWS::IAM::ServiceLinkedRole
+    Properties:
+      AWSServiceName: "ecs.amazonaws.com"
+      Description: "ServiceLinkedRole for ECS"
+
+  ECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ecs.amazonaws.com,ecs-tasks.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+      - PolicyName: ecs-service
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+              - 'ec2:AttachNetworkInterface'
+              - 'ec2:CreateNetworkInterface'
+              - 'ec2:CreateNetworkInterfacePermission'
+              - 'ec2:DeleteNetworkInterface'
+              - 'ec2:DeleteNetworkInterfacePermission'
+              - 'ec2:Describe*'
+              - 'ec2:DetachNetworkInterface'
+              - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
+              - 'elasticloadbalancing:DeregisterTargets'
+              - 'elasticloadbalancing:Describe*'
+              - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
+              - 'elasticloadbalancing:RegisterTargets'
+              - 'route53:ChangeResourceRecordSets'
+              - 'route53:CreateHealthCheck'
+              - 'route53:DeleteHealthCheck'
+              - 'route53:Get*'
+              - 'route53:List*'
+              - 'route53:UpdateHealthCheck'
+              - 'servicediscovery:DeregisterInstance'
+              - 'servicediscovery:Get*'
+              - 'servicediscovery:List*'
+              - 'servicediscovery:RegisterInstance'
+              - 'servicediscovery:UpdateInstanceCustomHealthStatus'
+              - 'dynamodb:*'
+              - 'xray:*'
+            Resource: '*'
+
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ecs-tasks.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+        - PolicyName: AmazonECSTaskExecutionRolePolicy
+          PolicyDocument:
+            Statement:
+            - Effect: Allow
+              Action:
+                - 'ecr:GetAuthorizationToken'
+                - 'ecr:BatchCheckLayerAvailability'
+                - 'ecr:GetDownloadUrlForLayer'
+                - 'ecr:BatchGetImage'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+              Resource: '*'
+
+  ECSRoleParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: /cuddlekube/iam/ECSRole
+      Type: "String"
+      Value: !GetAtt "ECSRole.Arn"
+      Description: "ECS Role ARN"
+
+  ECSTaskExecutionRoleParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: /cuddlekube/iam/ECSTaskExecutionRole
+      Type: "String"
+      Value: !GetAtt "ECSTaskExecutionRole.Arn"
+      Description: "ECS Task Execution Role ARN"
+
+Outputs:
+  Cluster:
+    Value: !Ref Identifier
+    Export:
+      Name: !Sub "${AWS::StackName}-Name"
+  ECSRole:
+    Description: The ARN of the ECS role
+    Value: !GetAtt 'ECSRole.Arn'
+    Export:
+      Name: !Sub "${AWS::StackName}-ECSRole"
+  ECSTaskExecutionRole:
+    Description: The ARN of the ECS role
+    Value: !GetAtt 'ECSTaskExecutionRole.Arn'
+    Export:
+      Name: !Sub "${AWS::StackName}-ECSTaskExecutionRole"

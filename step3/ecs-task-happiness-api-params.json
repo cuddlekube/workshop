@@ -1,0 +1,38 @@
+[
+    {
+        "ParameterKey": "TaskFamily",
+        "ParameterValue": "happiness-api"
+    },
+    {
+        "ParameterKey": "ContainerName",
+        "ParameterValue": "arjenschwarz/cuddle-happiness-api"
+    },
+    {
+        "ParameterKey": "ContainerVersion",
+        "ParameterValue": "1.0"
+    },
+    {
+        "ParameterKey": "ECSRole",
+        "ParameterValue": "/cuddlekube/iam/ECSRole"
+    },
+    {
+        "ParameterKey": "ECSTaskExecutionRole",
+        "ParameterValue": "/cuddlekube/iam/ECSTaskExecutionRole"
+    },
+    {
+        "ParameterKey": "InternalDomain",
+        "ParameterValue": "cuddle-kube.svc.cluster.local"
+    },
+    {
+        "ParameterKey": "MeshName",
+        "ParameterValue": "/cuddlekube/mesh"
+    },
+    {
+        "ParameterKey": "MeshNodePrefix",
+        "ParameterValue": "happiness-v1"
+    },
+    {
+        "ParameterKey": "LogGroup",
+        "ParameterValue": "/cuddlekube/logs/microservices"
+    }
+]
