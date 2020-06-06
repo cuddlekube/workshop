@@ -1,0 +1,26 @@
+{
+    "ckid": {
+        "S": "ck1"
+    },
+    "name": {
+        "S": "ig.nore.me"
+    },
+    "type": {
+        "S": "m2.xlarge"
+    },
+    "service": {
+        "N": "10"
+    },
+    "happiness": {
+        "N": "1"
+    },
+    "petname": {
+        "S": "The ignored one"
+    },
+    "os": {
+        "S": "linux"
+    },
+    "image": {
+        "S": "https://ig.nore.me/favicon-192.png"
+    }
+}

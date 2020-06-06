@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "App Mesh"
+
+Parameters:
+  Identifier:
+    Description: Name of the AppMesh
+    Type: String
+
+Resources:
+  Mesh:
+    Type: AWS::AppMesh::Mesh
+    Properties:
+      MeshName: !Ref Identifier
+
+  MeshParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Join
+        - "/"
+        - - "/cuddlekube"
+          - "mesh"
+      Type: "String"
+      Value: !Ref Identifier
+      Description: "Name of the mesh being used"
+
+Outputs:
+  MeshName:
+    Description: Name of the mesh
+    Value: !Ref Mesh
+    Export:
+      Name: !Sub "${AWS::StackName}-Mesh"

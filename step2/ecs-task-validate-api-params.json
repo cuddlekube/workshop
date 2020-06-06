@@ -1,0 +1,34 @@
+[
+    {
+        "ParameterKey": "TaskFamily",
+        "ParameterValue": "validate-api"
+    },
+    {
+        "ParameterKey": "ContainerName",
+        "ParameterValue": "arjenschwarz/cuddle-validate-api"
+    },
+    {
+        "ParameterKey": "ContainerVersion",
+        "ParameterValue": "1.0"
+    },
+    {
+        "ParameterKey": "ECSRole",
+        "ParameterValue": "/cuddlekube/iam/ECSRole"
+    },
+    {
+        "ParameterKey": "ECSTaskExecutionRole",
+        "ParameterValue": "/cuddlekube/iam/ECSTaskExecutionRole"
+    },
+    {
+        "ParameterKey": "InternalDomain",
+        "ParameterValue": "cuddle-kube.svc.cluster.local"
+    },
+    {
+        "ParameterKey": "MeshName",
+        "ParameterValue": "/cuddlekube/mesh"
+    },
+    {
+        "ParameterKey": "MeshNodePrefix",
+        "ParameterValue": "validate-v1"
+    }
+]

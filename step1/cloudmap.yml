@@ -24,6 +24,14 @@ Resources:
       Value: !Ref InternalNamespace
       Description: "Cloud Map ARN"
 
+  InternalDomainParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: /cuddlekube/internaldomain
+      Type: "String"
+      Value: !Ref InternalDomainName
+      Description: "The internal domain name being used"
+
 Outputs:
   InternalNamespaceArn:
     Description: Arn of the internal registry

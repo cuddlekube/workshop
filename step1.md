@@ -24,7 +24,11 @@ The application requires a DynamoDB table to be set up. This is a simple one wit
 aws cloudformation create-stack --stack-name cuddlekube-dynamodb --template-body file://step1/dynamodb.yml --parameters file://step1/dynamodb-params.json
 ```
 
-This template creates a table in pay per request mode, ensuring it doesn't cost us money unless we actually use it.
+This template creates a table in pay per request mode, ensuring it doesn't cost us money unless we actually use it. While we're at it, let's load some sample data in here.
+
+```bash
+aws dynamodb put-item --table-name cuddlekube --item file://step1/dynamo-data.json
+```
 
 ## VPC and security group
 

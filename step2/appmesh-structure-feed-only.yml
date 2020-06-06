@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: The App Mesh configuration
+Parameters:
+  MeshName:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The parameter store key that contains the name of the appmesh
+  Domain:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: The parameter store key that contains the domain the microservices are located in
+
+Resources:
+  FeedRouter:
+    Type: AWS::AppMesh::VirtualRouter
+    Properties:
+      MeshName: !Ref MeshName
+      VirtualRouterName: !Sub "feed-router-${MeshName}"
+      Spec:
+        Listeners:
+          - PortMapping:
+              Port: 8080
+              Protocol: http
+
+  FeedService:
+    Type: AWS::AppMesh::VirtualService
+    Properties:
+      MeshName: !Ref MeshName
+      Spec:
+        Provider:
+          VirtualRouter:
+            VirtualRouterName: !GetAtt FeedRouter.VirtualRouterName
+      VirtualServiceName: !Sub "feed-api.${Domain}"
+
+  FeedNodeV1:
+    Type: AWS::AppMesh::VirtualNode
+    Properties:
+      MeshName: !Ref MeshName
+      VirtualNodeName: !Sub "feed-v1-${MeshName}"
+      Spec:
+        Listeners:
+          - PortMapping:
+              Port: 8080
+              Protocol: http
+            HealthCheck:
+              HealthyThreshold: 3
+              IntervalMillis: 5000
+              Path: /health
+              Port: 8080
+              Protocol: http
+              TimeoutMillis: 2000
+              UnhealthyThreshold: 3
+        ServiceDiscovery:
+          DNS:
+            Hostname: !Sub "feed-api.${Domain}"
+
+  FeedRoute:
+    Type: AWS::AppMesh::Route
+    Properties:
+      MeshName: !Ref MeshName
+      RouteName: feed-route
+      VirtualRouterName: !GetAtt FeedRouter.VirtualRouterName
+      Spec:
+        HttpRoute:
+          Match:
+            Prefix: "/"
+          Action:
+            WeightedTargets:
+              - VirtualNode: !GetAtt FeedNodeV1.VirtualNodeName
+                Weight: 1
