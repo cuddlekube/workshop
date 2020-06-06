@@ -73,14 +73,15 @@ Resources:
             - ContainerPort: 8080
               HostPort: 8080
               Protocol: tcp
+          DependsOn:
+            - ContainerName: "envoy"
+              Condition: "HEALTHY"
         - Name: "envoy"
           Image: "840364872350.dkr.ecr.ap-southeast-2.amazonaws.com/aws-appmesh-envoy:v1.12.3.0-prod"
           Essential: true
           Environment:
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: !Sub "mesh/${MeshName}/virtualNode/${MeshNodePrefix}-${MeshName}"
-            - Name: "ENABLE_ENVOY_XRAY_TRACING"
-              Value: "1"
           HealthCheck:
             Command:
               - "CMD-SHELL"
