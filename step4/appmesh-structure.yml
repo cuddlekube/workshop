@@ -54,7 +54,7 @@ Resources:
         ServiceDiscovery:
           AWSCloudMap:
             NamespaceName: !Ref Domain
-            ServiceName: !Sub "feed-api.${Domain}"
+            ServiceName: feed-api
 
   FeedRoute:
     Type: AWS::AppMesh::Route
@@ -113,7 +113,7 @@ Resources:
         ServiceDiscovery:
           AWSCloudMap:
             NamespaceName: !Ref Domain
-            ServiceName: !Sub "list-api.${Domain}"
+            ServiceName: list-api
 
   ListRoute:
     Type: AWS::AppMesh::Route
@@ -172,7 +172,7 @@ Resources:
         ServiceDiscovery:
           AWSCloudMap:
             NamespaceName: !Ref Domain
-            ServiceName: !Sub "order-api.${Domain}"
+            ServiceName: order-api
 
   OrderRoute:
     Type: AWS::AppMesh::Route
@@ -236,7 +236,7 @@ Resources:
         ServiceDiscovery:
           AWSCloudMap:
             NamespaceName: !Ref Domain
-            ServiceName: !Sub "register-api.${Domain}"
+            ServiceName: register-api
 
   RegisterNodeV2:
     Type: AWS::AppMesh::VirtualNode
@@ -262,8 +262,9 @@ Resources:
               TimeoutMillis: 2000
               UnhealthyThreshold: 3
         ServiceDiscovery:
-          DNS:
-            Hostname: !Sub "register-api-new.${Domain}"
+          AWSCloudMap:
+            NamespaceName: !Ref Domain
+            ServiceName: register-api-new
 
   RegisterRoute:
     Type: AWS::AppMesh::Route
@@ -324,7 +325,7 @@ Resources:
         ServiceDiscovery:
           AWSCloudMap:
             NamespaceName: !Ref Domain
-            ServiceName: !Sub "validate-api.${Domain}"
+            ServiceName: validate-api
 
   ValidateRoute:
     Type: AWS::AppMesh::Route
@@ -390,7 +391,7 @@ Resources:
         ServiceDiscovery:
           AWSCloudMap:
             NamespaceName: !Ref Domain
-            ServiceName: !Sub "public-site.${Domain}"
+            ServiceName: public-site
 
   SiteRoute:
     Type: AWS::AppMesh::Route
@@ -449,7 +450,7 @@ Resources:
         ServiceDiscovery:
           AWSCloudMap:
             NamespaceName: !Ref Domain
-            ServiceName: !Sub "happiness-api.${Domain}"
+            ServiceName: happiness-api
 
   HappinessRoute:
     Type: AWS::AppMesh::Route

@@ -9,7 +9,7 @@
     },
     {
         "ParameterKey": "ContainerVersion",
-        "ParameterValue": "1.1"
+        "ParameterValue": "broken"
     },
     {
         "ParameterKey": "ECSRole",

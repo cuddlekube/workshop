@@ -48,8 +48,8 @@ Resources:
     Properties:
       Cluster: !Ref Cluster
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 50
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref DesiredCount
       LaunchType: FARGATE
       NetworkConfiguration:
