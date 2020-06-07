@@ -18,7 +18,6 @@ Now, while you were debugging you could have also already switched back to the w
 
 There are more things you can do with this workshop that aren't covered. Feel free to play around with it as much as you want, including with the original source code linked in the [README](README.md). Some ideas:
 
-* Make the service discovery in App Mesh use native CloudMap instead of DNS
 * Configure X-Ray so it doesn't try to log health checks
 * Set up alarms based on metrics and logs
 * Fix it so service updates don't require you to manually stop tasks
@@ -48,6 +47,12 @@ aws cloudformation delete-stack --stack-name cuddlekube-task-order-api
 aws cloudformation delete-stack --stack-name cuddlekube-task-list-api
 aws cloudformation delete-stack --stack-name cuddlekube-task-happiness-api
 aws cloudformation delete-stack --stack-name cuddlekube-task-feed-api
+```
+
+If the running tasks don't seem to stop after a minute, please run the stoptasks script to force this.
+
+```bash
+bash stoptasks.sh
 ```
 
 ### ALB
@@ -93,6 +98,13 @@ aws cloudformation delete-stack --stack-name cuddlekube-vpc
 
 ```bash
 aws cloudformation delete-stack --stack-name cuddlekube-logs
+```
+
+### X-Ray group
+
+
+```bash
+aws xray delete-group --group-name "cuddle-kube"
 ```
 
 ### Leftovers

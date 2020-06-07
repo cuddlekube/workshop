@@ -56,11 +56,17 @@ aws cloudformation update-stack --stack-name cuddlekube-service-register-api --t
 aws cloudformation update-stack --stack-name cuddlekube-service-validate-api --template-body file://step1/ecs-service.yml --parameters file://step1/ecs-service-validate-api-params.json
 ```
 
+If the running tasks don't seem to stop after a minute, please run the stoptasks script to force this.
+
+```bash
+bash stoptasks.sh
+```
+
 And now we can see our logs show up as well. At this point if you look at the logs you will see a lot of errors similar to `[Error] write udp 127.0.0.1:44418->127.0.0.1:2000: write: connection refused`. That is because the application is ready for the next part, although the rest of the stack isn't yet.
 
 ## Tracing: X-Ray
 
-Tracing, or distributed tracing allows us to follow a request all the way to the end. This is especially useful in a microservices architecture as it can help us pinpoint exactly where things are going wrong. X-Ray is the service AWS offers for this and, in good news, it is actually integrated with App Mesh so things are easier.
+Tracing, or distributed tracing, allows us to follow a request all the way from start to the end. This is especially useful in a microservices architecture as it can help us pinpoint exactly where things are going wrong or are slower than expected. X-Ray is the service AWS offers for this and, in good news, it is actually integrated with App Mesh so things are easier.
 
 This tracing is enabled at the task level again, so yes we will once again rebuild and redeploy our tasks and services. Adding X-Ray consists of 2 steps. First, we need to add an additional sidecar that runs the X-Ray daemon and secondly we'll need to run enable the Envoy proxy to use it as well. As mentioned, the application is already configured to use X-Ray, otherwise you would have needed to set that up too.
 
@@ -86,6 +92,12 @@ aws cloudformation update-stack --stack-name cuddlekube-service-register-api --t
 aws cloudformation update-stack --stack-name cuddlekube-service-validate-api --template-body file://step1/ecs-service.yml --parameters file://step1/ecs-service-validate-api-params.json
 ```
 
+If the running tasks don't seem to stop after a minute, please run the stoptasks script to force this.
+
+```bash
+bash stoptasks.sh
+```
+
 And now we can go see our traces in X-Ray! Let's have a quick [look there at the X-Ray Console](https://ap-southeast-2.console.aws.amazon.com/xray/home?region=ap-southeast-2#/service-map) and you will see something like the below.
 
 ![](img/x-ray-unfiltered.png)
@@ -96,6 +108,12 @@ In the dropdown that likely shows Default, there is an option to create a group.
 
 ```
 http.url BEGINSWITH "http://cuddlek-alb"
+```
+
+You can also do it from the CLI with the command:
+
+```bash
+aws xray create-group --group-name "cuddle-kube" --filter-expression "http.url BEGINSWITH \"http://cuddlek-alb\""
 ```
 
 ![](img/x-ray-filtered.png)

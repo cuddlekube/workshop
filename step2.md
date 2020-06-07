@@ -49,8 +49,6 @@ Now in the Console you can see that we have a feed api service with a routes tha
 
 ![](img/app-mesh-feed-api.png)
 
-If you examine the node in more detail you will also notice that it uses DNS for the service discovery. It's also possible to use CloudMap directly, but doing so is left as an exercise for the reader as there were issues with that at the time this infrastructure was originally designed.
-
 Now, we need all the other services to be in the app-mesh as well, including the connections between them. Let's take a moment to understand how those connections work. It should be clear that to call a service from within the mesh you do so using the name/domain of the service. In the case above, that would be `feed-api.cuddle-kube.svc.cluster.local`, but by default connections between Virtual Services will be denied. So you have to make sure these are enabled. Which you can by defining the `BackendServices` in the spec. In CloudFormation (using code from `step2/appmesh-structure.yml`) that can be defined as:
 
 ```yaml
@@ -99,7 +97,7 @@ aws cloudformation update-stack --stack-name cuddlekube-task-validate-api --temp
 
 And then we'll update the services to use the latest version. As the template uses the `Latest` parameter for the task definitions, and we just updated that we can simply doing so by using the same template and parameters as in step1.
 
-**Note:** To speed up the process during the workshop, the deployment will stop the running tasks before starting its replacement. This means the site (or parts of it) can't be accessed during the deployment. Don't do this for your real workloads.
+**Note:** To speed up the process during the workshop, the deployment will stop the running tasks before starting its replacement. This means the site (or parts of it) can't be accessed during the deployment. Don't do this for your real workloads. In addition, sometimes the running tasks don't automatically stop because they have trouble deregistering from CloudMap. To work around this bug you can use the stoptasks.sh script I've included to force this. Or do so manually in the Console.
 
 ```bash
 aws cloudformation update-stack --stack-name cuddlekube-service-feed-api --template-body file://step1/ecs-service.yml --parameters file://step1/ecs-service-feed-api-params.json
@@ -109,6 +107,12 @@ aws cloudformation update-stack --stack-name cuddlekube-service-order-api --temp
 aws cloudformation update-stack --stack-name cuddlekube-service-public-site --template-body file://step1/ecs-service.yml --parameters file://step1/ecs-service-public-site-params.json
 aws cloudformation update-stack --stack-name cuddlekube-service-register-api --template-body file://step1/ecs-service.yml --parameters file://step1/ecs-service-register-api-params.json
 aws cloudformation update-stack --stack-name cuddlekube-service-validate-api --template-body file://step1/ecs-service.yml --parameters file://step1/ecs-service-validate-api-params.json
+```
+
+If the running tasks don't seem to stop after a minute, please run the stoptasks script to force this.
+
+```bash
+bash stoptasks.sh
 ```
 
 And now we're using App Mesh to direct our traffic. Play around with it a bit to verify this. For example, if you change the Node that the list API route is pointing to in App Mesh you will notice after a couple of seconds that the list page no longer shows any servers. Unfortunately, we can't see much yet, so that's what we'll be addressing next.
