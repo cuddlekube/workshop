@@ -52,8 +52,9 @@ Resources:
               TimeoutMillis: 2000
               UnhealthyThreshold: 3
         ServiceDiscovery:
-          DNS:
-            Hostname: !Sub "feed-api.${Domain}"
+          AWSCloudMap:
+            NamespaceName: !Ref Domain
+            ServiceName: feed-api
 
   FeedRoute:
     Type: AWS::AppMesh::Route
@@ -110,8 +111,9 @@ Resources:
               TimeoutMillis: 2000
               UnhealthyThreshold: 3
         ServiceDiscovery:
-          DNS:
-            Hostname: !Sub "list-api.${Domain}"
+          AWSCloudMap:
+            NamespaceName: !Ref Domain
+            ServiceName: list-api
 
   ListRoute:
     Type: AWS::AppMesh::Route
@@ -168,8 +170,9 @@ Resources:
               TimeoutMillis: 2000
               UnhealthyThreshold: 3
         ServiceDiscovery:
-          DNS:
-            Hostname: !Sub "order-api.${Domain}"
+          AWSCloudMap:
+            NamespaceName: !Ref Domain
+            ServiceName: order-api
 
   OrderRoute:
     Type: AWS::AppMesh::Route
@@ -231,8 +234,9 @@ Resources:
               TimeoutMillis: 2000
               UnhealthyThreshold: 3
         ServiceDiscovery:
-          DNS:
-            Hostname: !Sub "register-api.${Domain}"
+          AWSCloudMap:
+            NamespaceName: !Ref Domain
+            ServiceName: register-api
 
   RegisterRoute:
     Type: AWS::AppMesh::Route
@@ -289,8 +293,9 @@ Resources:
               TimeoutMillis: 2000
               UnhealthyThreshold: 3
         ServiceDiscovery:
-          DNS:
-            Hostname: !Sub "validate-api.${Domain}"
+          AWSCloudMap:
+            NamespaceName: !Ref Domain
+            ServiceName: validate-api
 
   ValidateRoute:
     Type: AWS::AppMesh::Route
@@ -354,8 +359,9 @@ Resources:
               TimeoutMillis: 2000
               UnhealthyThreshold: 3
         ServiceDiscovery:
-          DNS:
-            Hostname: !Sub "public-site.${Domain}"
+          AWSCloudMap:
+            NamespaceName: !Ref Domain
+            ServiceName: public-site
 
   SiteRoute:
     Type: AWS::AppMesh::Route
@@ -412,8 +418,9 @@ Resources:
               TimeoutMillis: 2000
               UnhealthyThreshold: 3
         ServiceDiscovery:
-          DNS:
-            Hostname: !Sub "happiness-api.${Domain}"
+          AWSCloudMap:
+            NamespaceName: !Ref Domain
+            ServiceName: happiness-api
 
   HappinessRoute:
     Type: AWS::AppMesh::Route
