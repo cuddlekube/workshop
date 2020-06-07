@@ -23,12 +23,16 @@ Parameters:
     Type: Number
     Description: The number of instances we want to run
   TargetGroup:
-    Type: String
-    Default: ""
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: "/cuddlekube/TargetGroup"
     Description: (optional) The ARN of the TargetGroup this service should be attached to
+  ConnectToAlb:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true","false"]
 
 Conditions:
-  HasTargetGroup: !Not [ !Equals [ !Ref TargetGroup, "" ]]
+  HasTargetGroup: !Equals [ !Ref ConnectToAlb, "true" ]
 
 Resources:
   ServiceRegistry:
@@ -48,8 +52,8 @@ Resources:
     Properties:
       Cluster: !Ref Cluster
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 50
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref DesiredCount
       LaunchType: FARGATE
       NetworkConfiguration:

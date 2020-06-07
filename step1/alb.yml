@@ -51,7 +51,7 @@ Resources:
       TargetType: ip
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
-          Value: "60"
+          Value: "10"
 
   HttpListener:
     Type: AWS::ElasticLoadBalancingV2::Listener

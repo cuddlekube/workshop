@@ -29,6 +29,10 @@
     },
     {
         "ParameterKey": "TargetGroup",
-        "ParameterValue": "arn:aws:elasticloadbalancing:ap-southeast-2:554643136430:targetgroup/cuddl-Targe-SADUWY86Y4MH/a42e89df4f31f365"
+        "ParameterValue": "/cuddlekube/TargetGroup"
+    },
+    {
+        "ParameterKey": "ConnectToAlb",
+        "ParameterValue": "true"
     }
 ]

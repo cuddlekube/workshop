@@ -99,6 +99,8 @@ aws cloudformation update-stack --stack-name cuddlekube-task-validate-api --temp
 
 And then we'll update the services to use the latest version. As the template uses the `Latest` parameter for the task definitions, and we just updated that we can simply doing so by using the same template and parameters as in step1.
 
+**Note:** To speed up the process during the workshop, the deployment will stop the running tasks before starting its replacement. This means the site (or parts of it) can't be accessed during the deployment. Don't do this for your real workloads.
+
 ```bash
 aws cloudformation update-stack --stack-name cuddlekube-service-feed-api --template-body file://step1/ecs-service.yml --parameters file://step1/ecs-service-feed-api-params.json
 aws cloudformation update-stack --stack-name cuddlekube-service-happiness-api --template-body file://step1/ecs-service.yml --parameters file://step1/ecs-service-happiness-api-params.json
@@ -109,6 +111,6 @@ aws cloudformation update-stack --stack-name cuddlekube-service-register-api --t
 aws cloudformation update-stack --stack-name cuddlekube-service-validate-api --template-body file://step1/ecs-service.yml --parameters file://step1/ecs-service-validate-api-params.json
 ```
 
-And now we're using App Mesh to direct our traffic. Play around with it a bit by doing things like changing routes in the mesh to confirm that it actually is using App Mesh. Unfortunately, we can't see much yet, so that's what we'll be addressing next.
+And now we're using App Mesh to direct our traffic. Play around with it a bit to verify this. For example, if you change the Node that the list API route is pointing to in App Mesh you will notice after a couple of seconds that the list page no longer shows any servers. Unfortunately, we can't see much yet, so that's what we'll be addressing next.
 
 Proceed to [step 3](step3.md).
