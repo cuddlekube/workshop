@@ -25,15 +25,21 @@ Now, let's get you started with getting the basic setup done in [Step 1](step1.m
 ## Requirements
 
 * An AWS account
+* An IAM account with sufficient *write* access for all the below mentioned services.
 
 ## Tools and services used
 
 * CloudFormation
 * VPC
+* ALB
 * ECS Fargate
 * DynamoDB
 * CloudMap
 * App Mesh
+* SSM Parameter Store
+* CloudWatch (the various parts)
+* X-Ray
+* IAM
 * Docker Hub (for the public images)
 
 

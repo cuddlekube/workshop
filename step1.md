@@ -6,6 +6,16 @@ In this step we'll set up the basic requirements to run the application. While i
 
 The below shows how to run the various CloudFormation templates using the CLI. It is recommended that if you want to deploy this using CloudFormation you use the CLI as it is far easier, especially where it concerns the handling of parameters, however it is not required.
 
+## Clone this repo
+
+In order to use all the commands following this, it's easiest to clone this repository to your computer.
+
+```bash
+git clone https://github.com/cuddlekube/workshop.git cuddlekube-workshop
+```
+
+Then cd into the cuddlekube-workshop directory and all the commands expect to be run from there.
+
 ## ECS Cluster
 
 Create a new ECS cluster named `cuddlekube`. This can be done using the `ecs-cluster.yml` CloudFormation template. From the command line you can run it using:
@@ -39,6 +49,12 @@ aws cloudformation create-stack --stack-name cuddlekube-vpc --template-body file
 ```
 
 This template will also create a security group to be used by the Fargate containers. The security group, VPC ID, and subnet IDs are all saved in the parameter store for later usage. Again, if you decide not to use the template for this, please make sure that the values are stored in the Parameter Store using the same names and types as the template would.
+
+**Important:** From this point onwards, it is recommended that you wait for a CloudFormation stack to be fully deployed before moving onto the next step. Otherwise there might be timing issues. You can verify that a stack is finished either in the Console or by running the command (using the above as an example):
+
+```bash
+aws cloudformation wait stack-create-complete --stack-name cuddlekube-vpc
+```
 
 ## Load Balancer
 
