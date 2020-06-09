@@ -20,6 +20,8 @@ Each step has its own description file and directory full of files. Once you com
 
 While you are encouraged to build and experiment with many parts, a possible solution for each step is provided in the next step. While this might not be the exact solution you found, that doesn't make yours any less valid so feel free to continue using your working solution. The solutions provided in these steps will usually be in the form of CloudFormation templates.
 
+**Before you start:** The resources you spin up in this cost money and most of them do not fall into the free tier. If you only use them for an hour or two the costs aren't high (a couple of USD), but make sure to follow [step 5](step5.md) to tear everything down again.
+
 Now, let's get you started with getting the basic setup done in [Step 1](step1.md).
 
 ## Requirements
